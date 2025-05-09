@@ -10,6 +10,7 @@ const gunningResult = ref('')
 const fryResult = ref([])
 const posX = ref(0)
 const posY = ref(0)
+const showPoint = ref(false)
 
 /**
  * Calculer la lisibilité du texte avec les deux algorithmes
@@ -29,21 +30,31 @@ function calculateLegibilityText() {
   getFryResult(text.value).then((v) => {
     fryResult.value = v
 
-    setPointCoordonates(v[0], v[1]);
+    setPointCoordonates(124, 8);
     // setPointCoordonates(128, 5)
+
+
   });
 }
 
 /**
- *
- * @param x
- * @param y
+ * Change les coordonnées reçues pour les faire correspondre à l'image
+ * @param x Valeur de l'axe X
+ * @param y Valeur de l'axe Y
  */
 function setPointCoordonates(x, y) {
+  //Si y est plus petit que 10 alors linéaire
+  if (y <= 10) {
+    posY.value = 287 - ((y - 2) * 27.125)
+  } else {
+    posY.value = 45
+  }
+
+  //Ajout de la position sur l'axe X
   posX.value = 55 + ((x - 108) * 6.48)
-  posY.value = 287 - ((y - 2) * 11.74)
 }
 
+// Position du point sur le graphique
 const divPosition = computed(() => {
   return {
     left: `${posX.value}px`,
@@ -78,7 +89,7 @@ const divPosition = computed(() => {
             <h3>Algorithme de Fry</h3>
             <p>{{ fryResult }}</p>
             <div class="graph">
-              <div class="point" :style="divPosition"></div>
+              <div class="point" :style="divPosition" v-if="showPoint"></div>
               <img src="@/assets/fry-graph-formula.png" alt="Graphique image fry"></div>
           </div>
         </div>
