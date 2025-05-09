@@ -29,10 +29,8 @@ import {averageWordsInSentence, averageSyllabsNumber, getWordsList} from "@/js/r
  * @param textBrut Text à analyser
  * @returns {number[]} Cordonnées sur le graphique de Fry
  */
-export function getFryResult(textBrut) {
-    const averageWordsInSentences = averageWordsInSentence(textBrut)
+export async function getFryResult(textBrut) {
     const words = getWordsList(textBrut)
-    return averageSyllabsNumber(words).then(res => {
-        return [res, averageWordsInSentences]
-    })
+
+    return [await averageSyllabsNumber(words), averageWordsInSentence(textBrut)]
 }

@@ -28,8 +28,10 @@ function calculateLegibilityText() {
   //top 287px pour 0, 17px pour fin -> 11,74
   getFryResult(text.value).then((v) => {
     fryResult.value = v
+
+    setPointCoordonates(v[0], v[1]);
+    // setPointCoordonates(128, 5)
   });
-  setPointCoordonates(128, 5)
 }
 
 /**

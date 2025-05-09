@@ -63,51 +63,47 @@ function isFamilyWord(word) {
 /**
  *
  * @param textBrut
- * @returns {Promise<{invalidWords: number, syllabs: number}>}
+ * @returns
  */
-export function averageSyllabsNumber(wordsList) {
-    let promises = []
+export async function averageSyllabsNumber(wordsList) {
+    let totalSyllabsNumber = 0;
+    let invalidWords = 0;
 
-    wordsList.forEach(word => {
-        promises.push(getSyllabsNumber(word))
-    })
-    return Promise.all(promises).then(results => {
-        let syllabs = 0;
-        let invalidWords = 0;
+    for (const word of wordsList) {
 
-        results.forEach(result => {
-            if (result === -1) {
-                invalidWords++;
-            } else {
-                syllabs += result;
-            }
-        })
+        let syllabsNumber = await getSyllabsNumber(word);
+        console.log(syllabsNumber);
+        if (syllabsNumber === -1) {
+            invalidWords++;
+        } else {
+            totalSyllabsNumber += syllabsNumber;
+        }
+    }
 
-        console.log(syllabs, invalidWords);
+    console.log(totalSyllabsNumber)
 
-        let wordsNumber = wordsList.length - invalidWords;
-
-        return syllabs / wordsNumber;
-    })
+    return {averageSyllabsNumber : totalSyllabsNumber / (wordsList.length - invalidWords), invalidWords : invalidWords} ;
 }
 
 /**
  * renvoie le nombre de syllabes dans un mot
  * @param word mot traité
- * @returns {Promise<void>}
+ * @returns
  */
-function getSyllabsNumber(word) {
-    const lexique = getArray()
+async function getSyllabsNumber(word) {
+    const lexique = await getArray()
 
     let result = -1;
-    return lexique.then((lexique) => {
-        let index = lexique.indexOf(word)
 
-        if (index >= 0) {
-            result = lexique[index]
-            return result;
-        }
-    })
+    let index = lexique.indexOf(word)
+
+    if (index >= 0) {
+        result = lexique[index][1]
+    }
+
+    console.log(result)
+
+    return result;
 }
 
 /**
@@ -130,25 +126,30 @@ async function getArray() {
     // récupère les mots contenus dans le fichier
     let lexique = localStorage.getItem('lexique');
 
+    // console.log(lexique)
+
     // si le fichier ne contient aucun mot, on sort de la fonction
     if (lexique !== null) {
         return lexique;
     }
 
-    const response = await fetch('./lexicon.csv');
+    const response = await fetch('./data/lexique.csv');
     if (!response.ok) throw new Error('Erreur de chargement du fichier');
 
     const text = await response.text();
+    console.log(text)
 
     // Découpe le texte en lignes
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split(',');
+    const lines = text.trim().split('\r\n');
+    const headers = lines[0].split(';');
 
     const result = [];
 
     for (let i = 1; i < lines.length; i++) {
-        const row = lines[i].split(',');
+        const row = lines[i].split(';');
         const entry = {};
+
+        console.log(row);
 
         for (let j = 0; j < headers.length; j++) {
             entry[headers[j].trim()] = row[j].trim();
