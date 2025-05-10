@@ -33,6 +33,7 @@ function calculateLegibilityText() {
     fryResult.value = v
 
     setPointCoordonates(v[0], v[1]);
+    pointVisible = true;
   });
 }
 
@@ -45,6 +46,8 @@ function setPointCoordonates(x, y) {
   posX.value = 55 + ((x - 108) * 6.48)
   posY.value = 287 - ((y - 2) * 11.74)
 }
+
+let pointVisible = false;
 
 const divPosition = computed(() => {
   return {
@@ -80,7 +83,7 @@ const divPosition = computed(() => {
             <h3>Algorithme de Fry</h3>
             <p>{{ fryResult }}</p>
             <div class="graph">
-              <div class="point" :style="divPosition"></div>
+              <div class="point" :style="divPosition" v-if="pointVisible"></div>
               <img src="@/assets/fry-graph-formula.png" alt="Graphique image fry"></div>
           </div>
         </div>
