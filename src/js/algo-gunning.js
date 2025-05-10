@@ -5,9 +5,9 @@ import {averageWordsInSentence, countComplexWords, getWordsList} from "@/js/ress
  * @param {string} textBrut - Le texte à analyser.
  * @returns {number} - L'indice Gunning Fog du texte.
  */
-export function getGunningResult(textBrut) {
+export async function getGunningResult(textBrut) {
     const wordsNumber = getWordsList(textBrut).length;
-    const complexWordsNumber = countComplexWords(textBrut);
+    const complexWordsNumber = await countComplexWords(textBrut);
 
     return 0.4 * (averageWordsInSentence(textBrut) + 100 * (complexWordsNumber / wordsNumber));
 }

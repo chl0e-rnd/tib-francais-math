@@ -24,16 +24,17 @@ function calculateLegibilityText() {
   }
 
   // Effectue les algoritmes sur les tests
-  gunningResult.value = getGunningResult(text.value);
+  getGunningResult(text.value).then((res) => {
+    gunningResult.value = res
+  })
+
   //left 55px pour 0, 470px pour fin -> 64 diff | 415 px de long, 415 / 64 = 25,90
   //top 287px pour 0, 17px pour fin -> 11,74
   getFryResult(text.value).then((v) => {
     fryResult.value = v
-
-    setPointCoordonates(124, 8);
-    // setPointCoordonates(128, 5)
-
-
+    
+    setPointCoordonates(v[0], v[1]);
+    showPoint.value = true;
   });
 }
 

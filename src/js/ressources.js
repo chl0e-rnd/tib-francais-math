@@ -1,13 +1,6 @@
 //Déclaration des constantes
-const MAX_SYLLABLES = 3;
-
-function cropText(textBrut) {
-
-}
-
-function cleanText(textBrut) {
-
-}
+const MAX_SYLLABS = 3;
+const INVALID_WORD = -1;
 
 /**
  * Récupère tous les mots d'un texte
@@ -15,11 +8,11 @@ function cleanText(textBrut) {
  * @returns {[string]} Retoune une liste de chacun des mots présent dans un texte
  */
 export function getWordsList(textBrut) {
-    return textBrut.replace(/[^a-zA-Z0-9À-ÿ\s'-]/g, ' ').trim().split(/\s+/)
 
-    // const segmenter = new Intl.Segmenter([], { granularity: 'word' });
-    // const segmentedText = segmenter.segment(textBrut);
-    // const words = [...segmentedText].filter(s => s.isWordLike).map(s => s.segment);
+    const segmenter = new Intl.Segmenter([], { granularity: 'word' });
+    const segmentedText = segmenter.segment(textBrut);
+    return [...segmentedText].filter(s => s.isWordLike).map(s => s.segment);
+
 }
 
 
@@ -29,24 +22,26 @@ export function getWordsList(textBrut) {
  * @returns {*|number} Retoune le nombre de phrases dans le texte.
  */
 function countSentences(textBrut) {
-    let nbreSentences = textBrut.match(/[\.\!\?]+/g);
-
-    return nbreSentences ? nbreSentences.length : 0;
+    const segmenter = new Intl.Segmenter([], { granularity: 'sentence' });
+    const segmentedText = segmenter.segment(textBrut);
+    return [...segmentedText].map(s => s.segment).length;
 }
 
 /**
  * compte le nombre de mots complexes (plus de 3 syllabes) dans un text
  * @param text texte traité
- * @returns {number} nombre de mots complexes
+ * @returns Promise<number>
  */
-export function countComplexWords(text) {
+export async function countComplexWords(text) {
     let complexWords = 0; // nombre de mots complexes
     const wordsList = getWordsList(text); // liste de mots dans le texte
 
     // traite chaque mot du texte
     for (const word of wordsList) {
+        let syllabs = await getSyllabsNumber(word);
+
         // si un mot contient plus de 3 syllabes et que ce n'est pas un nom propre et que ce n'est pas un nom composé, il y a un mot de plus dans le texte
-        if (getSyllabsNumber(word) >= MAX_SYLLABLES && !isProperNoun(word) && !word.includes('-')) {
+        if (syllabs >= MAX_SYLLABS && syllabs !== INVALID_WORD && !word.includes('-')) {
             complexWords++;
         }
     }
@@ -54,36 +49,42 @@ export function countComplexWords(text) {
     return complexWords;
 }
 
-function isFamilyWord(word) {
-
-}
-
-
-
 /**
  *
  * @param textBrut
  * @returns
  */
-export async function averageSyllabsNumber(wordsList) {
+export async function averageSyllabsNumber(wordsList, batchSize = 10) {
     let totalSyllabsNumber = 0;
     let invalidWords = 0;
 
-    for (const word of wordsList) {
+    for (let i = 0; i < wordsList.length; i += batchSize) {
+        const batch = wordsList.slice(i, i + batchSize);
 
-        let syllabsNumber = await getSyllabsNumber(word);
-        console.log(syllabsNumber);
-        if (syllabsNumber === -1) {
-            invalidWords++;
-        } else {
-            totalSyllabsNumber += syllabsNumber;
+        const results = await Promise.all(
+            batch.map(async (word) => {
+                return await getSyllabsNumber(word);
+            })
+        );
+
+        for (const syllabsNumber of results) {
+            if (syllabsNumber === INVALID_WORD) {
+                invalidWords++;
+            } else {
+                totalSyllabsNumber += syllabsNumber;
+            }
         }
+
+        // laisser le navigateur respirer après chaque batch
+        await new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    console.log(totalSyllabsNumber)
-
-    return {averageSyllabsNumber : totalSyllabsNumber / (wordsList.length - invalidWords), invalidWords : invalidWords} ;
+    return {
+        averageSyllabsNumber: totalSyllabsNumber / (wordsList.length - invalidWords),
+        invalidWords: invalidWords
+    };
 }
+
 
 /**
  * renvoie le nombre de syllabes dans un mot
@@ -93,17 +94,13 @@ export async function averageSyllabsNumber(wordsList) {
 async function getSyllabsNumber(word) {
     const lexique = await getArray()
 
-    let result = -1;
-
-    let index = lexique.indexOf(word)
-
-    if (index >= 0) {
-        result = lexique[index][1]
+    for (const element of lexique) {
+        if (element[0] === word.toLocaleLowerCase()) {
+            return parseFloat(element[1]);
+        }
     }
 
-    console.log(result)
-
-    return result;
+    return INVALID_WORD;
 }
 
 /**
@@ -124,9 +121,9 @@ export function averageWordsInSentence(textBrut) {
  */
 async function getArray() {
     // récupère les mots contenus dans le fichier
-    let lexique = localStorage.getItem('lexique');
+    // localStorage.removeItem('lexique')
 
-    // console.log(lexique)
+    let lexique = JSON.parse(localStorage.getItem('lexique'));
 
     // si le fichier ne contient aucun mot, on sort de la fonction
     if (lexique !== null) {
@@ -137,7 +134,6 @@ async function getArray() {
     if (!response.ok) throw new Error('Erreur de chargement du fichier');
 
     const text = await response.text();
-    console.log(text)
 
     // Découpe le texte en lignes
     const lines = text.trim().split('\r\n');
@@ -149,8 +145,6 @@ async function getArray() {
         const row = lines[i].split(';');
         const entry = {};
 
-        console.log(row);
-
         for (let j = 0; j < headers.length; j++) {
             entry[headers[j].trim()] = row[j].trim();
         }
@@ -158,20 +152,7 @@ async function getArray() {
         result.push([entry['word'], entry['syll']]);
     }
 
-    console.log('Tableau 2D :', result);
-
     lexique = result;
-    localStorage.setItem('lexique', lexique);
+    localStorage.setItem('lexique', JSON.stringify(lexique));
     return lexique;
-}
-
-/**
- * Vérifie si le mot est un nom propre.
- * @param word Le mot à vérifier.
- * @returns {boolean} Retourne vrai si c'est un nom propre, faux sinon.
- */
-function isProperNoun(word) {
-    return getArray().then(array => {
-        return !array.includes(word);
-    });
 }
