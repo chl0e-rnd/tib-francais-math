@@ -21,12 +21,12 @@ function calculateLegibilityText() {
     alert('Veuillez entrer un texte avant de calculer la lisibilité.')
     return
   }
-  console.log(1)
+
   // Effectue les algoritmes sur les tests
   getGunningResult(text.value).then((res) => {
     gunningResult.value = res
   })
-  console.log(2)
+
   //left 55px pour 0, 470px pour fin -> 64 diff | 415 px de long, 415 / 64 = 25,90
   //top 287px pour 0, 17px pour fin -> 11,74
   getFryResult(text.value).then((v) => {
