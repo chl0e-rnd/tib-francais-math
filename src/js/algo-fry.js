@@ -1,4 +1,4 @@
-import {averageWordsInSentence, averageSyllabsNumber, getWordsList} from "@/js/ressources.js";
+import {averageSyllabsNumber, getWordsList, countSentences} from "@/js/ressources.js";
 
 /**
  * Calcul la lisibilité du text passé en paramètre par rapport à l'algorithme de de Fry
@@ -8,5 +8,5 @@ import {averageWordsInSentence, averageSyllabsNumber, getWordsList} from "@/js/r
 export async function getFryResult(textBrut) {
     const words = getWordsList(textBrut)
 
-    return [(await averageSyllabsNumber(words)).averageSyllabsNumber * 100, averageWordsInSentence(textBrut)]
+    return [(await averageSyllabsNumber(words)).averageSyllabsNumber * 100, countSentences(textBrut) / words.length * 100 ]
 }

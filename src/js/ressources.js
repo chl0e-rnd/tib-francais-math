@@ -21,7 +21,7 @@ export function getWordsList(textBrut) {
  * @param textBrut Le texte brut à analyser.
  * @returns {*|number} Retoune le nombre de phrases dans le texte.
  */
-function countSentences(textBrut) {
+export function countSentences(textBrut) {
     const segmenter = new Intl.Segmenter([], { granularity: 'sentence' });
     const segmentedText = segmenter.segment(textBrut);
     return [...segmentedText].map(s => s.segment).length;
@@ -63,7 +63,7 @@ export async function averageSyllabsNumber(wordsList, batchSize = 10) {
 
         const results = await Promise.all(
             batch.map(async (word) => {
-                return await getSyllabsNumber(word);
+                return await getSyllabsNumber(word)
             })
         );
 
