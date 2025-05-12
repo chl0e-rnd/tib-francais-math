@@ -1,29 +1,17 @@
-# tib
+# But de la branche
 
-This template should help get you started developing with Vue 3 in Vite.
+Cette branche offre une version de l'application plus performante, spécifiquement dans l'implémentation des algorithmes de Gunning et Fry.
 
-## Recommended IDE Setup
+## Avant
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Voici le temps pris avant les modifications avec un texte de 500 mots :
 
-## Customize configuration
+![alt text](img.png "Temps avant les modifications")
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## Après
 
-```sh
-npm install
-```
+Voici le temps pris après les modifications un texte de 500 mots :
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+![alt text](img_1.png "Temps après les modifications")

@@ -22,6 +22,9 @@ function calculateLegibilityText() {
     return
   }
 
+  const a = performance.now();
+
+
   const textAnalyzer = new TextAnalyzer(text.value)
 
   gunningResult.value = textAnalyzer.gunning.toFixed(2)
@@ -31,6 +34,9 @@ function calculateLegibilityText() {
   setPointCoordonates(fryResult.value[0], fryResult.value[1]);
 
   showPoint.value = true;
+
+  const b = performance.now();
+  console.log('It took ' + (b - a) + ' ms.');
 }
 
 /**
