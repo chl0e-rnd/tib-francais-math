@@ -121,8 +121,7 @@ export function averageWordsInSentence(textBrut) {
  */
 async function getArray() {
     // récupère les mots contenus dans le fichier
-    // localStorage.removeItem('lexique')
-    console.log(localStorage.getItem('lexique'))
+
     let lexique = JSON.parse(localStorage.getItem('lexique'));
 
     // si le fichier ne contient aucun mot, on sort de la fonction
@@ -132,9 +131,9 @@ async function getArray() {
 
     const response = await fetch('./data/lexique.csv');
     if (!response.ok) throw new Error('Erreur de chargement du fichier');
-    console.log(response)
+
     const text = await response.text();
-    console.log(text)
+
     // Découpe le texte en lignes
     const lines = text.trim().split('\n');
     const headers = lines[0].split(';');
@@ -151,7 +150,7 @@ async function getArray() {
 
         result.push([entry['word'], entry['syll']]);
     }
-    console.log(result);
+
     lexique = result;
     localStorage.setItem('lexique', JSON.stringify(lexique));
     return lexique;
