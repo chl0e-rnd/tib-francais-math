@@ -136,7 +136,7 @@ async function getArray() {
     const text = await response.text();
     console.log(text)
     // Découpe le texte en lignes
-    const lines = text.trim().split('\r\n');
+    const lines = text.trim().split('\n');
     const headers = lines[0].split(';');
 
     const result = [];
