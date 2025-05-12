@@ -23,13 +23,12 @@ function calculateLegibilityText() {
     return
   }
 
-  // Effectue les algoritmes sur les tests
+  // Effectue algoritme Gunning sur le texte
   getGunningResult(text.value).then((res) => {
     gunningResult.value = res
   })
 
-  //left 55px pour 0, 470px pour fin -> 64 diff | 415 px de long, 415 / 64 = 25,90
-  //top 287px pour 0, 17px pour fin -> 11,74
+  // Effectue algoritme Fry sur le texte
   getFryResult(text.value).then((v) => {
     fryResult.value = v
     
