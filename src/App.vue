@@ -1,7 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import {getFryResult} from "@/js/algo-fry.js";
-import {getGunningResult} from "@/js/algo-gunning.js";
+import {TextAnalyzer} from "@/js/textAnalyzer.js";
 
 
 //Déclaration des variables
@@ -23,18 +22,15 @@ function calculateLegibilityText() {
     return
   }
 
-  // Effectue algoritme Gunning sur le texte
-  getGunningResult(text.value).then((res) => {
-    gunningResult.value = res
-  })
+  const textAnalyzer = new TextAnalyzer(text.value)
 
-  // Effectue algoritme Fry sur le texte
-  getFryResult(text.value).then((v) => {
-    fryResult.value = v
-    
-    setPointCoordonates(v[0], v[1]);
-    showPoint.value = true;
-  });
+  gunningResult.value = textAnalyzer.gunning.toFixed(2)
+
+  fryResult.value = textAnalyzer.fry.map((v) => parseFloat(v.toFixed(2)))
+
+  setPointCoordonates(fryResult.value[0], fryResult.value[1]);
+
+  showPoint.value = true;
 }
 
 /**
