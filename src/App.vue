@@ -1,13 +1,11 @@
 <script setup>
 import {computed, ref} from "vue";
-import {getFryResult} from "@/js/algo-fry.js";
-import {getGunningResult} from "@/js/algo-gunning.js";
+import {TextAnalyzer} from "@/js/textAnalyzer.js";
 
-
-//Déclaration des variables
+// Déclaration des variables
 const text = ref('')
 const gunningResult = ref('')
-const fryResult = ref([])
+const fryResult = ref({x: '', y: ''})
 const posX = ref(0)
 const posY = ref(0)
 const showPoint = ref(false)
@@ -23,18 +21,19 @@ function calculateLegibilityText() {
     return
   }
 
-  // Effectue algoritme Gunning sur le texte
-  getGunningResult(text.value).then((res) => {
-    gunningResult.value = res
-  })
+  // Création d'un analyseur de texte
+  const textAnalyzer = new TextAnalyzer(text.value)
 
-  // Effectue algoritme Fry sur le texte
-  getFryResult(text.value).then((v) => {
-    fryResult.value = v
-    
-    setPointCoordonates(v[0], v[1]);
-    showPoint.value = true;
-  });
+  // Récupère l'indice de Gunning et utilise uniquement les deux premiers chiffres après la virgule
+  gunningResult.value = textAnalyzer.getGunning().toFixed(2)
+
+  // Récupère l'indice de Fry et utilise uniquement les deux premiers chiffres après la virgule
+  let fry = textAnalyzer.getFry()
+  fryResult.value = {x: fry.x.toFixed(2), y: fry.y.toFixed(2)}
+
+  // Met à jour le point sur le graphique de Fry
+  setPointCoordinates(fryResult.value.x, fryResult.value.y);
+
 }
 
 /**
@@ -42,16 +41,19 @@ function calculateLegibilityText() {
  * @param x Valeur de l'axe X
  * @param y Valeur de l'axe Y
  */
-function setPointCoordonates(x, y) {
-  //Si y est plus petit que 10 alors linéaire
+function setPointCoordinates(x, y) {
+  // Si y est plus petit que 10 alors linéaire
   if (y <= 10) {
     posY.value = 287 - ((y - 2) * 27.125)
   } else {
     posY.value = 45
   }
 
-  //Ajout de la position sur l'axe X
+  // Ajout de la position sur l'axe X
   posX.value = 55 + ((x - 108) * 6.48)
+
+  // Affiche le point
+  showPoint.value = true;
 }
 
 // Position du point sur le graphique
@@ -87,10 +89,11 @@ const divPosition = computed(() => {
           </div>
           <div class="fry">
             <h3>Algorithme de Fry</h3>
-            <p>{{ fryResult }}</p>
+            <p>x : {{ fryResult.x || '-'}}</p>
+            <p>y : {{ fryResult.y || '-'}}</p>
             <div class="graph">
               <div class="point" :style="divPosition" v-if="showPoint"></div>
-              <img src="@/assets/fry-graph-formula.png" alt="Graphique image fry"></div>
+              <img src="@/assets/fry-graph-formula.png" alt="Graphique de fry"></div>
           </div>
         </div>
       </div>
@@ -168,7 +171,7 @@ div.content {
           position: relative;
           color: red;
           font-weight: bold;
-          bottom: 0px;
+          bottom: 0;
           width: 10px;
           height: 10px;
           background-color: red;
