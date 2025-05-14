@@ -1,17 +1,33 @@
-# But de la branche
+# TIB - Français & Mathématique
 
-Cette branche offre une version de l'application plus performante, spécifiquement dans l'implémentation des algorithmes de Gunning et Fry.
+Dans le cadre de nos cours de TIB, nous avions consignes d'implémenter différents algorithmes permettant d'évaluer la 
+lisibilité d'un texte.
+Nous avons choisi de le faire en utilisant le framework Vue.js ce qui nous a permis de créer facilement une interface 
+graphique et publier le site web encore plus simplement.
 
-## Avant
 
-Voici le temps pris avant les modifications avec un texte de 500 mots :
+## Recommended IDE Setup
 
-![alt text](img.png "Temps avant les modifications")
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
----
+## Customize configuration
 
-## Après
+See [Vite Configuration Reference](https://vite.dev/config/).
 
-Voici le temps pris après les modifications un texte de 500 mots :
+## Project Setup
 
-![alt text](img_1.png "Temps après les modifications")
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
